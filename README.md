@@ -1,14 +1,16 @@
-[Core Blit](http://github.com/gfcarvalho/coreblit) html5 game framework
+[Core Blit](http://github.com/gfcarvalho/coreblit)
 =============================================================================
-
-(!) Em fase inicial de desenvolvimento - recomenda-se a utilização apenas para experimentos
+<b>HTML5 game framework</b>
 
 Copyright (C) 2013, Gustavo Carvalho
 
 Core Blit é licenciado sobre a [MIT License](http://www.opensource.org/licenses/mit-license.php)
 
+
 Sobre Core Blit
 -------------------------------------------------------------------------------
+<b>( ! ) AVISO: Em fase inicial de desenvolvimento. Recomenda-se a utilização apenas para experimentos.</b>
+
 Core Blit é um framework para desenvolvimento de jogos em HTML5.
 
 Por ser simples, leve e sem dependências de outros softwares é a solução ideal para iniciantes e para aqueles que buscam uma plataforma base para construir sua própria game engine.
