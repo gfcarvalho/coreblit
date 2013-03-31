@@ -1,4 +1,4 @@
-[Core Blit](http://github.com/gfcarvalho/coreblit)
+[Core Blit](http://github.com/gfcarvalho/coreblit) html5 game framework
 =============================================================================
 
 (!) Em fase inicial de desenvolvimento - recomenda-se a utilização apenas para experimentos
