@@ -8,6 +8,7 @@ Core Blit é licenciado sobre a [MIT License](http://www.opensource.org/licenses
 Sobre Core Blit
 -------------------------------------------------------------------------------
 Core Blit é um framework para desenvolvimento de jogos em HTML5.
+
 Por ser simples, leve e sem dependências de outros softwares é a solução ideal para iniciantes e para aqueles que buscam uma plataforma base para construir sua própria game engine.
 
 Core Blit é o resultado de 2 anos de estudo em Javascript e HTLM5 no desenvolvimento de jogos, e apresenta as seguintes funcionalidades principais :
@@ -41,9 +42,9 @@ No OS X, você deve instalar [Xcode](https://developer.apple.com/xcode/) (ambas 
 
 No Linux/BSD usuários devem utilizar os próprios package managers para instalar make e java.
 
-* Regular build :
+Regular build :
 -------------------------------------------------------------------------------
-`$ cd coreblit`
+`$ cd /path/to/coreblit`
 
 `$ make build`
 
@@ -51,17 +52,19 @@ Tanto a versão plain quanto a minificada da biblioteca estarão disponíveis no
 
 Construindo a documentação
 -------------------------------------------------------------------------------
-`cd coreblit`
+`$ cd path/to/coreblit`
 
-`make doc`
+`$ make doc`
 
 A ducumentação gerada estará disponível no diretório "docs"
 
-* Build completo (Regular + Documentação)
+Build completo (Regular + Documentação)
 -------------------------------------------------------------------------------
-`cd coreblit`
+`$ cd path/to/coreblit`
 
-`make`
+`$ make`
+
+Tanto a versão plain quanto a minificada da biblioteca estarão disponíveis no diretório "build/minified"<br>
 
 A ducumentação gerada estará disponível no diretório "docs"
 
