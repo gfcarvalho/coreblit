@@ -30,14 +30,22 @@ buildir = build
 docdir = docs
 
 # CURRENT BUILD VERSION
-COREBLITJS_VERSION=$(shell cat $(srcdir)/version.js | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/")
+COREBLIT_VERSION=$(shell cat $(srcdir)/version.js | sed "s/^.*[^0-9]\([0-9]*\.[0-9]*\.[0-9]*\).*/\1/")
 VERSION=sed "s/@VERSION/${COREBLIT_VERSION}/"
 
 # list of libraries
 LIBRARIES = 
 
 # list of modules
-MODULES = 
+MODULES = $(srcdir)/patch.js\
+	 $(srcdir)/core.js\
+	 $(srcdir)/modules/system.js\
+	 $(srcdir)/modules/event.js\
+	 $(srcdir)/modules/display.js\
+	 $(srcdir)/modules/timer.js\
+	 $(srcdir)/modules/game.js\
+	 $(srcdir)/classes/GameObject.js\
+	 $(srcdir)/classes/Vector2d.js
 
 # list of modules to compile into minified file
 BUILD_MODULES = $(LIBRARIES)\
@@ -47,10 +55,10 @@ BUILD_MODULES = $(LIBRARIES)\
 TEMP = $(buildir)/_temp.js
 
 # Debug Target name
-DEBUG = $(buildir)/coreblit-$(PROTONJS_VERSION).js
+DEBUG = $(buildir)/coreblit-$(COREBLIT_VERSION).js
 
 # Build Target name
-BUILD = $(buildir)/coreblit-$(PROTONJS_VERSION)-min.js
+BUILD = $(buildir)/coreblit-$(COREBLIT_VERSION)-min.js
 
 #######################################################################
 
