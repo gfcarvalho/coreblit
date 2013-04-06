@@ -591,7 +591,7 @@
 									 /**Boolean*/ adjust_aspect_ratio)
 		{
 			// remove vinculo com a viewport, caso exista
-			api.removeAttachmentToViewport();
+			api.unfitResolution();
 			
 			// reajusta as dimensoes (resolucao) de ambos front e back buffer
 			api.backBuffer.width = api.canvas.width = width;
