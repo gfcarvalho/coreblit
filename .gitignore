@@ -167,5 +167,4 @@ pip-log.txt
 ###########################
 build/*
 docs/*
-tools/*
 .placeholder
