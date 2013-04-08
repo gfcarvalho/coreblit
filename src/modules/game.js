@@ -209,16 +209,15 @@
 			console.log("==================================================");
 		};
 		
-		/**
+		/*
 			Ponto de entrada para o gameLoop.
 			@function
 			@private 
 			@type void
 		*/
-		var frame = function(){
-			// display.flush();
+		/*var frame = function(){			
 			gameLoop();
-		};
+		};*/
 
 		/**
 			Loop de renderizacao da engine. Efetua a atualizacao e a exibicao dos graficos.		
@@ -236,11 +235,14 @@
 			// timeMultiplier = hack usado para acelerar ou desacelerar o jogo
 			var dt = Math.min(0.0666667, timer.tick()) * timeMultiplier;
 			
+			// handleInput();
+			
+			addNewGameObjects();
+			removeOldGameObjects();
+			
 			// benchmark
 			if(benchmarkActivated)
-				executeBenchmark();	
-					
-			// frameID = requestAnimationFrame(frame);
+				executeBenchmark();				
 			
 			display.clear();
 			
@@ -249,9 +251,6 @@
 			// inicia as rotinas de atualização e rendering dos GameObjects
 			if (!paused)
 			{
-				addNewGameObjects();
-				removeOldGameObjects();
-
 				// primeiramente atualiza-se todos os game objects
 				for (var x = 0; x < gameObjects.length; ++x)
 				{
@@ -300,7 +299,7 @@
 			// context.restore();
 			
 			// requisita o proximo quadro de animacao
-			frameID = requestAnimationFrame(frame);
+			frameID = requestAnimationFrame(gameLoop);
 		};
 
 		//==========================================================================================
@@ -419,11 +418,8 @@
 		};
 		
 		// reinicia o jogo reload)
-		api.reset = function(/*reload?*/reload)
-		{
-			// inicia o status
-			// if(!stats){ stats = Util.status('statsPanel','fps'); }
-			
+		/*api.reset = function(reload)
+		{			
 			// cache para o contexto de rendering
 			if(!context){ context = display.getSystemContext(); }
 			
@@ -435,7 +431,7 @@
 			// implementar game.state (maquina de estados) -> usar jakegordon modificada?
 			// api.game.state.reset();
 			
-		};
+		};*/
 		
 		/**
 			Indica se o game loop esta ativo.
@@ -478,13 +474,10 @@
 				
 				// cache para o contexto de rendering
 				if(!context){ context = display.getSystemContext(); }
+								
+				display.clear();				
 				
-				// limpa tudo antes de iniciar ( ? )
-				// display.clear();
-				display.clearBackBuffer();
-				
-				// marca o tempo de inicio do primeiro frame a ser desenhado
-				// lastFrame = Date.now();
+				// comeca a contagem de tempo
 				timer.begin();
 				
 				// publica o evento core.event.GAME_RUN
@@ -510,8 +503,8 @@
 			// cancela o gameLoop
 			frameID = cancelAnimationFrame(frameID); // frameID = undefined
 			
-			core.event.publish.defer(core.event.GAME_STOP, [context, api.xScroll, api.yScroll] );
-			
+			// publica o evento core.event.GAME_STOP
+			core.event.publish.defer(core.event.GAME_STOP, [context, api.xScroll, api.yScroll] );			
 			
 			console.log("GAME_MANAGER: Game loop interrompido.");
 		};
@@ -532,8 +525,7 @@
 		};
 		
 		/**
-			Remove um objeto especifico da colecao de objetos.<br>
-			Chama o callback onDestroy para o objeto (se o objeto possuir tal callback)  removido.
+			Remove um objeto especifico da colecao de objetos.<br>			
 			@name core.game#removeGameObject
 			@function
 			@public
@@ -592,19 +584,13 @@
 		};
 		
 		/**
-			Ordena a colecao de objetos do jogo (z-buffer).<br>
-			Ordena a colecao de objetos do menor para o maior zOrder (profundidade).<br>
-			Dessa forma objetos com maior zOrder sao renderizados por ultimo
-			e se sobrepoem aos de menor zOrder em caso de ocuparem um mesmo espaco na viewport.<br>
-			(!) Deixar o programador decidir quando reordenar
-			OBS: executado automaticamente ao inserir um novo objeto na colecao. Tambem chamado automaticamente 
-			pelo metodo {@link core.GameObject#setDepth} utilizado para alterar a profundidade de um objeto
+			Ordena a colecao de objetos do jogo (zOrder).<br>
 			@name core.game#sort
 			@function
 			@public
-			@type void
+			@type void			
 		*/
-		api.sort = function() // add sort function???
+		api.sort = function()
 		{
 			gameObjects.sort(function(a,b){return a.zOrder - b.zOrder;});
 		};
@@ -613,8 +599,7 @@
 			Indica se a aplicacao esta ou nao em pausa no momento da chamada.
 			@name core.game#isPaused
 			@function
-			@public
-			@type Boolean
+			@public			
 			@return {Boolean} Retorna true se a aplicacao esta em pausa, false caso contrario.
 		*/
 		api.isPaused = function()
@@ -685,7 +670,13 @@
 			}
 		};
 		
-		// pega uma posicao do canvas e converte para a posicao do game (posicao no mundo de jogo)
+		/**
+			Pega uma posicao do canvas e converte para a posicao do game (posicao no mundo de jogo)
+			@name core.game#toGamePosition
+			@function
+			@public
+			@deprecated
+		*/
 		api.toGamePosition = function (x, y)
 		{			
 			// display.toCanvasPosition(x, y);

@@ -1,6 +1,6 @@
 (function() { // begin core.timer runtime closure
 	/**
-	 *	Time Manager (Controle de tempo)
+	 *	(Time Manager) Controle de tempo
 	 * @author <a href="mailto:gustavo.carvalho@ufv.br">Gustavo Carvalho</a>
 	 * @final
 	 * @static

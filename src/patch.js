@@ -122,13 +122,19 @@
 	//=========================================================================
 	// Extensoes de objetos Javascript nativos
 	//=========================================================================
+	Object.extend = function(destination, source) {
+		for (var property in source)
+			destination[property] = source[property];
+		return destination;
+	}
+	
 	var slice = Array.prototype.slice;
 	
 	function update(array, args) {
 		var arrayLength = array.length, length = args.length;
 		while (length--) array[arrayLength + length] = args[length];
 		return array;
-	}
+	};
 	
 	Function.prototype.delay = function (timeout) {
 		var __method = this, args = slice.call(arguments, 1);
@@ -148,15 +154,42 @@
 		return this;
 	};
 	
+	Array.prototype.binarySearch = function(find, comparator) {
+		var low = 0, high = this.length - 1,
+		i, comparison;
+		while (low <= high) {
+			i = Math.floor((low + high) / 2);
+			comparison = comparator(this[i], find);
+			if (comparison < 0) { low = i + 1; continue; };
+			if (comparison > 0) { high = i - 1; continue; };
+			return i;
+		}
+		return -1;
+	};	
+	
+	Array.prototype.binarySearch2 = function(value, key) {
+		var low = 0, high = this.length - 1,
+		i, comparison;
+		while (low <= high) {
+			i = Math.floor((low + high) / 2);
+			comparison = (this[i][key] - value);
+			if (comparison < 0) { low = i + 1; continue; };
+			if (comparison > 0) { high = i - 1; continue; };
+			return i;
+		}
+		return -1;
+	};
+	
 	/**
 		Remove um certo numero de objetos do array
 		@extends Array
 		@param {Number} from Posicao no array do primeiro objeto a ser removido
-		@param {Number} to (Opcional) Posicao no array do ultimo objeto a ser removido
+		@param {Number} qtd (Opcional) Quantidade de objetos a remover
 	*/
-	Array.prototype.remove = function(/**Number*/ from, /**Number*/ to)
+	Array.prototype.remove = function(/**Number*/ from, /**Number*/ qtd)
 	{	  
-	  this.splice(from, 1);
+		// this.splice(from, (qtd || 1));
+		this.splice(from, 1);
 	};
 
 	/**

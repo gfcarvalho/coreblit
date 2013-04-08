@@ -82,6 +82,8 @@ var jsgame = {};
 			this.signal *= -1;
 		}
 		this.velocity += this.signal;
+		
+		
 	}	
 	ball.draw = function(dt, context, xScroll, yScroll) {
 		context.save();	
@@ -96,7 +98,7 @@ var jsgame = {};
 	}	
 	ball.addToGame();
 	
-	ball2 = new core.GameObject(30, 200, 2);	
+	var ball2 = new core.GameObject(30, 200, 2);	
 	ball2.color = "rgba(0, 255, 0, 1)";	
 	ball2.velocity = 0;
 	ball2.signal = 1;
@@ -104,23 +106,44 @@ var jsgame = {};
 	ball2.draw = ball.draw;
 	ball2.addToGame();
 	
-	ball3 = new core.GameObject(30,300, 2);	
+	var ball3 = new core.GameObject(30,300, 2);	
 	ball3.color = "rgba(0, 0, 255, 1)";	
 	ball3.velocity = 0;
 	ball3.signal = 1;
-	ball3.update = ball.update;
+	ball3.update = function()
+	{
+		var key = core.input.getKeyStatus(37);
+		if(key.isPressed())
+			this.x-=1;				
+		key.unlock();
+		
+		key = core.input.getKeyStatus(38);
+		if(key.isPressed())
+			this.y-=1;
+
+		key = core.input.getKeyStatus(39);
+		if(key.isPressed())
+			this.x+=1;	
+			
+		key = core.input.getKeyStatus(40);
+		if(key.isPressed())
+			this.y+=1;	
+	}
 	ball3.draw = ball.draw;
 	ball3.addToGame();
 	
 	jsgame.ball = ball;
 	jsgame.ball2 = ball2;
-	jsgame.ball23 = ball3;
+	jsgame.ball3 = ball3;
 	
 	function init()
 	{
 		core.display.startup(500, 500, true, true, true, true);
 		// core.display.setBrightness(0.7);
 		// core.display.attachResolutionToViewport(true);
+		
+		core.input.enableKeyboard();
+		core.input.enableKeys(37, 38, 39, 40);
 		
 		core.game.run();
 	}

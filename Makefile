@@ -42,6 +42,7 @@ MODULES = $(srcdir)/patch.js\
 	 $(srcdir)/modules/system.js\
 	 $(srcdir)/modules/event.js\
 	 $(srcdir)/modules/display.js\
+	 $(srcdir)/modules/input.js\
 	 $(srcdir)/modules/timer.js\
 	 $(srcdir)/modules/game.js\
 	 $(srcdir)/classes/GameObject.js\
