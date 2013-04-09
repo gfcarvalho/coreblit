@@ -6,8 +6,8 @@ var jsgame = {};
 	debug.minText = null;
 	debug.maxText = null;
 	debug.objText = null;
-	debug.speedText = null;
-	debug.timeUpdate = 0;
+	debug.speedText = null;	
+	debug.timeUpdate = 1;
 	var hide = false;
 	
 	debug.startup = function(x, y, align, alpha)
@@ -16,6 +16,9 @@ var jsgame = {};
 		hide = false;
 		
 		this.fpsText = "";
+		this.minText = "";
+		this.maxText = "";
+		this.timeUpdate = 1;
 		core.GameObject.prototype.startup.call(this, (x || 0), (y || 0), Number.POSITIVE_INFINITY);
 		
 		return this;
@@ -26,14 +29,18 @@ var jsgame = {};
 		hide = !hide; 
 	}	
 	
-	debug.update = function(dt)
-	{
-		this.timeUpdate -= dt;
+	debug.update = function(dt, context)
+	{	
+		if(!this.timeUpdate)
+			this.timeUpdate = 1;
+		
+		this.timeUpdate -= dt;			
+		
 		if(this.timeUpdate <= 0)
 		{
 			this.fpsText = "FPS: " + core.timer.current();
 			this.minText = "MIN: " + core.timer.min();
-			this.maxText = "MAX: " + core.timer.max();
+			this.maxText = "MAX: " + core.timer.max();			
 			
 			this.timeUpdate = 1;
 		}
@@ -72,6 +79,8 @@ var jsgame = {};
 
 (function(){
 	
+	// core.input.enableKeys(37, 38, 39, 40, 67);
+	
 	var ball = new core.GameObject(30, 100, 2);
 	ball.color = "rgba(255, 0, 0, 1)"; // blue	
 	ball.velocity = 0;
@@ -82,6 +91,8 @@ var jsgame = {};
 			this.signal *= -1;
 		}
 		this.velocity += this.signal;
+		
+		
 	}	
 	ball.draw = function(dt, context, xScroll, yScroll) {
 		context.save();	
@@ -96,7 +107,7 @@ var jsgame = {};
 	}	
 	ball.addToGame();
 	
-	ball2 = new core.GameObject(30, 200, 2);	
+	var ball2 = new core.GameObject(30, 200, 2);	
 	ball2.color = "rgba(0, 255, 0, 1)";	
 	ball2.velocity = 0;
 	ball2.signal = 1;
@@ -104,23 +115,78 @@ var jsgame = {};
 	ball2.draw = ball.draw;
 	ball2.addToGame();
 	
-	ball3 = new core.GameObject(30,300, 2);	
+	var ball3 = new core.GameObject(30,300, 2);	
 	ball3.color = "rgba(0, 0, 255, 1)";	
 	ball3.velocity = 0;
 	ball3.signal = 1;
-	ball3.update = ball.update;
+	ball3.leftKey = core.input.getKey(37);
+	ball3.upKey = core.input.getKey(38);
+	ball3.rightKey = core.input.getKey(39);
+	ball3.downKey = core.input.getKey(40);
+	ball3.changeColorKey = core.input.getKey(67);
+	ball3.update = function(dt)
+	{
+		
+		if(this.leftKey.isPressed())
+			this.x-=90*dt;				
+		// key.unlock();		
+		
+		if(this.upKey.isPressed())
+			this.y-=90*dt;
+		// key.unlock();
+		
+		if(this.rightKey.isPressed())
+			this.x+=90*dt;	
+		// key.unlock();
+				
+		if(this.downKey.isPressed())
+			this.y+=90*dt;	
+		// key.unlock();		
+		
+		if(this.changeColorKey.event == core.input.KEYDOWN)
+		{
+			this.color = "red";
+			console.log("C down -> " + this.changeColorKey.time)
+		}
+		else if(this.changeColorKey.event == core.input.KEYUP)
+		{
+			this.color = "blue";
+			console.log("C up -> " + this.changeColorKey.time)
+		}
+		else 
+			this.color = "rgba(0, 0, 0, .2)";
+		// key.unlock();
+	}
 	ball3.draw = ball.draw;
 	ball3.addToGame();
 	
+	// exemplo de praticas ruins
+	var ball4 = new Object();
+	Object.extend(ball4, ball); 
+	ball4.color = "rgba(123, 123, 123, .9)";
+	ball4.y = 420;
+	ball4.addToGame(); // falha (copiamos apos ball ter sido inicializada)
+	// podemos adicionar ainda mas note que ball4 vai possuir o mesmo id de ball
+	// isso podera vir a ser um problema se o id for utilizado para alguma busca ou comparação
+	core.game.addGameObject(ball4);
+	
+	
 	jsgame.ball = ball;
 	jsgame.ball2 = ball2;
-	jsgame.ball23 = ball3;
+	jsgame.ball3 = ball3;
+	jsgame.ball4 = ball4;
 	
 	function init()
 	{
-		core.display.startup(500, 500, true, true, true, true);
+		// if(core.system.browserFeatures.NativeRequestAnimationFrame)
+			// alert("RequestAnimationFrame Nativo!");
+			
+		core.display.startup(500, 500, true, true, true, false);
 		// core.display.setBrightness(0.7);
 		// core.display.attachResolutionToViewport(true);
+		
+		core.input.enableKeyboard(true);
+		// core.input.enableKeys(37, 38, 39, 40, 67);
 		
 		core.game.run();
 	}

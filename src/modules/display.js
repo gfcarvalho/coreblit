@@ -54,7 +54,7 @@
 			@type Array
 			@private
 		*/
-		_attached_to_viewport = null,
+		_fit_to_viewport = null,
 		
 		/** Armazena a informacao de proporcao de aspecto apos iniciado o display.
 			Esta informacao sera usado quando o display necessitar ser redimensionado.
@@ -389,19 +389,16 @@
 					
 					if(_auto_adjust)
 					{
-						// auto-ajusta o canvas na janela do navegador de acordo com as configuracoes setadas
-						api.resize();
+						// ajusta o canvas na janela do navegador de acordo com as configucoes
+						api.resize.defer();
 					}					
 										
 					console.log("DISPLAY_MANAGER: Display iniciado.");
 				}
 				else
 				{						
-					console.log("DISPLAY_MANAGER: Nao foi possivel iniciar o display. Seu navegador parece nao suportar HTML5 canvas. ");
-					console.log("Utilize um navegador compativel ou verifique se o recurso esta habilitado.");
-					console.log("NOTA: Alguns navegadores podem desativar a execucao de alguns recursos dependendo das configuracoes de seguranca.");
-										
-					throw new Error("HTML5 canvas nao suportado ou desativado.");
+					console.log("DISPLAY_MANAGER: Nao foi possivel iniciar o display.");										
+					throw new Error("HTML5 canvas nao suportado pelo navegador.");
 				}   
 			}			
 			else // display already started
@@ -457,16 +454,14 @@
 			if(_double_buffered)
 			{				
 				// copia o back buffer para o display do canvas
-				api.context2D.drawImage(api.backBuffer, 0, 0);								
-				
-				// limpa o backBuffer
-				// api.backBufferContext2D.clearRect(0, 0, api.backBuffer.width, api.backBuffer.height);
+				api.context2D.drawImage(api.backBuffer, 0, 0);				
 			}			
 			
 		};
 		
 		/**
-			(!) funciona apenas se o jogo possuir um plano de fundo que ocupa todo o canvas
+			(!) funciona da maneira esperada apenas se o jogo possuir um plano de fundo que ocupa 
+			todo o canvas.
 		*/
 		api.setBrightness = function(brightness)
 		{
@@ -589,12 +584,14 @@
 			@param height 
 					altura da nova resolucao (em pixels)
 			@param adjust_aspect_ratio (opcional)
-					se true, ajusta o aspect ratio para que fique proporcional a nova resolucao ( default: false )
+					se true, ajusta o aspect ratio para que fique proporcional a nova resolucao 
+					( default: false )
 		*/
-		api.setResolution = function(/**Number*/ width,/**Number*/ height,/**Boolean*/ adjust_aspect_ratio)
+		api.setResolution = function(/**Number*/ width,/**Number*/ height,
+									 /**Boolean*/ adjust_aspect_ratio)
 		{
 			// remove vinculo com a viewport, caso exista
-			api.removeAttachmentToViewport();
+			api.unfitResolution();
 			
 			// reajusta as dimensoes (resolucao) de ambos front e back buffer
 			api.backBuffer.width = api.canvas.width = width;
@@ -624,7 +621,8 @@
 			@function
 			@public
 			@static			
-			@return {Object} Objeto na forma {width: Number, height: Number} contendo as dimensoes da resolucao (em pixels)
+			@return {Object} Objeto na forma {width: Number, height: Number} 
+					contendo as dimensoes da resolucao (em pixels)
 		*/
 		api.getResolution = function()
 		{
@@ -632,13 +630,15 @@
 		};
 		
 		/**
-			Recupera a dimensao real do canvas (front buffer) renderizada na janela do navegador (considerando o style aplicado)
-			Util para informar que nao eh a resolucao ideal(pode diminuir ou aumentar ) ( > resolucao => < FPS )
+			Recupera a dimensao real do canvas (front buffer) renderizada na janela do navegador 
+			(considera o style aplicado) <br>
+			Util para informar que nao eh a resolucao ideal(pode diminuir ou aumentar )
 			@name core.display#getDisplayDimensions
 			@function
 			@public
 			@static				
-			@return {Object} Objeto na forma {width: Number, height: Number} contendo as dimensoes do canvas renderizado(em pixels)
+			@return {Object} Objeto na forma {width: Number, height: Number} 
+					contendo as dimensoes do canvas renderizado(em pixels)
 		*/
 		api.getRenderDimensions = function()
 		{
@@ -655,24 +655,29 @@
 			return {width: window.innerWidth, height: window.innerHeight};
 		};
 		
-		/*api.getResolutionInfo = function() // add complete info of resolution
+		/**
+			@return true, se a resolucao estiver ajustada a janela do navegador e
+					false caso contrario.
+		*/
+		api.isResolutionFited = function()
 		{
-			var resolutionInfo = {};
-			
 			render_dimensions = api.getRenderDimensions();
-			if( render_dimensions.width != api.backBuffer.width || render_dimensions.height != api.backBuffer.height )
+			if( render_dimensions.width != api.backBuffer.width 
+				|| render_dimensions.height != api.backBuffer.height )
 			{
-				resolutionInfo.isIdealResolution = false; 
+				return false; 
 			}
-			else
-			{
-				resolutionInfo.isIdealResolution = true; // isBestResolution
-			}
-			
+			return true;
+		}
+		
+		/*api.getResolutionInfo = function() // informacao completa da resolucao
+		{
+			var resolutionInfo = {};						
+			resolutionInfo.isResolutionFited = api.isIdealResolution();		
 			resolutionInfo.currentResolution = api.getResolution();
-			resolutionInfo.windowResolution = api.getWindowResolution(); // idealResolution
+			resolutionInfo.windowResolution = api.getWindowResolution(); // Resolucao ideal
 			resolutionInfo.aspectRatio = api.getAspectRatio();
-			resolutionInfo.renderDimensions = api.getRenderDimensions(); // tamanho real(visivel) da tela
+			resolutionInfo.renderDimensions = api.getRenderDimensions();
 			
 			return resolutionInfo;
 		};*/
@@ -691,13 +696,15 @@
 			@type void
 			@param horizontal proporcao da largura da tela 
 			@param vertical proporcao da altura da tela
+			@param adjust_resolution ajusta a resolucao ao novo aspect ratio
 			@example
 			* // aspect ratio para o padrao widescreen 16:9 
 			* core.display.setAspectRatio(16, 9);	
 			*
 			* // note que 16/9 = 1.777... entao a largura eh 77,77% maior do que a altura
 		*/
-		api.setAspectRatio = function(/**Number*/ horizontal,/**Number*/  vertical, adjust_resolution)
+		api.setAspectRatio = function(/**Number*/horizontal,/**Number*/vertical,
+									  /**Boolean*/adjust_resolution)
 		{	
 			// muda o _aspect_ratio
 			_aspect_ratio = horizontal/vertical; 
@@ -736,11 +743,12 @@
 		
 		/**
 			Recupera o aspect ratio atual
-			@name core.display#getDisplayDimensions
+			@name core.display#getAspectRatio
 			@function
 			@public
 			@static
-			@return {Object} Objeto na forma {width: Number, height: Number} contendo as dimensoes do front buffer canvas (em pixels)
+			@return {Object} Objeto na forma {width: Number, height: Number} 
+					
 		*/
 		api.getAspectRatio = function()
 		{
@@ -752,9 +760,11 @@
 			@function
 			@public
 			@static
-			@param maintain_aspect_ratio true se deve manter o aspect ratio, false caso contrario (preenche 100% da tela se false).
-			(!) se maintain_aspect_ratio for false, ignora o aspect ratio no momento de renderizar a tela mas mantem o valor intacto
-			de modo que este possa ser restaurado.
+			@param maintain_aspect_ratio true se deve manter o aspect ratio,
+				   false caso contrario (preenche 100% da tela se false). <br>
+			(!) se maintain_aspect_ratio for false, ignora o aspect ratio no momento de renderizar 
+				a tela mas mantem o valor do aspect_ratio internamente de modo que este possa ser 
+				restaurado caso core.display#windowMode seja chamado
 		*/
 		api.stretchToFit = function(/**Boolean*/ maintain_aspect_ratio)
 		{
@@ -774,19 +784,20 @@
 		};
 		
 		/**
-			Vincula a resolucao as dimensoes da viewport, fazendo com que a resolucao seja sempre a mesma<br>
+			A resolucao passa a possuir sempre as dimensoes da viewport.
+			(!) Altera o aspect ratio
 			(!) Cuidado, em resolucoes muito altas o desempenho pode ser seriamente afetado.
 			@function
 			@public
 			@static
 		*/
-		api.attachResolutionToViewport = function(adjust_aspect_ratio) // (!)setar como true apenas se NAO quizer alterar o _aspect_ratio? (mais realista)
+		api.fitResolutionToViewport = function()
 		{			
 			// configura a resolucao para as dimensoes da viewport
-			api.setResolution(window.innerWidth, window.innerHeight, adjust_aspect_ratio);
+			api.setResolution(window.innerWidth, window.innerHeight, true);
 			
 			// atribui evento para alterar a resolucao toda vez que redimensionar a tela
-			_attached_to_viewport = core.event.subscribe(core.event.RESIZE, function(){
+			_fit_to_viewport = core.event.subscribe(core.event.RESIZE, function(){
 				// configura a resolucao para as dimensoes da viewport
 				width = window.innerWidth;
 				height = window.innerHeight;
@@ -797,13 +808,10 @@
 				
 				// dimensoes maximas = dimensoes da viewport = nova resolucao
 				_resolution_width = width;
-				_resolution_height = height;
+				_resolution_height = height;		
 				
-				if(adjust_aspect_ratio)
-				{
-					// ajusta o aspect ratio a cada mudanca de resolucao
-					_aspect_ratio = width/height;
-				}
+				// ajusta o aspect ratio a cada mudanca de resolucao
+				_aspect_ratio = width/height;				
 				
 				_resize();
 				
@@ -815,14 +823,23 @@
 		
 		/**
 			Remove o vinculo entre resolucao e viewport, caso exista.
+			Permite opcionalmente fixar nova resolucao. 
+			Caso contrario mantera a ultima resolucao antes dessa chamada.
 			@function
 			@public
 			@static
+			@param newWidth (opcional)  
+			@param newHeight (opcional)
 		*/
-		api.removeAttachmentToViewport = function()
+		api.unfitResolution = function(newWidth, newHeight)
 		{
-			if(_attached_to_viewport)
-				core.event.unsubscribe(_attached_to_viewport);
+			if(_fit_to_viewport)
+				core.event.unsubscribe(_fit_to_viewport);
+				
+			if(newWidth > 0 && newHeight > 0)
+			{
+				api.setResolution(newWidth, newHeight, true);
+			}
 		};
 				
 		/**
@@ -835,8 +852,7 @@
 		api.windowMode = function() 
 		{
 			_limit_canvas_size = true;
-			_stretch_to_fit = false;
-			// restoreAspecRatio();
+			_stretch_to_fit = false;			
 			api.resize();	
 		};
 				
@@ -847,7 +863,7 @@
 			@static
 		*/
 		api.flip = function()
-		{ // direction vectors  rightToLeft(-1, 0) / leftToright(1, 0) / bottonToTop(0, -1) / topToBotton(0, 1)
+		{ 
 			var newWidth = api.backBuffer.height;
 			var newHeight = api.backBuffer.width;
 			
@@ -855,18 +871,19 @@
 		};		
 		
 		/**
-			Pega uma posicao da viewport e converte para a posicao do canvas
+			Converte uma posicao da viewport para a posicao no canvas
 			@function
 			@public
 			@static
 		*/
-		api.toCanvasPosition = function (x, y) // get relative canvas position in the page ???
+		api.toCanvasPosition = function (x, y) // get relative canvas position in the page
 		{			
 			// calcula a posicao no canvas real
 			x -= _game_area.offsetLeft;
 			y -= _game_area.offsetTop;
 					
-			// aplica a conversao de escala do plano da janela do canvas // (resolucao /tamanho da tela)
+			// aplica a conversao de escala do plano da janela do canvas 
+			// (resolucao /tamanho da tela)
 			x *= (_resolution_width/_current_canvas_width);
 			y *= (_resolution_height/_current_canvas_height);
 			
@@ -874,9 +891,9 @@
 		};
 		
 				
-		// #####################################################################################################################
+		// #########################################################################################
 		// EXPERIMENTS
-		// #####################################################################################################################
+		// #########################################################################################
 		
 		// by MelonJS
 		
@@ -935,7 +952,7 @@
 				context.imageSmoothingEnabled = enable;
 			}
 			else {
-				console.log("DISPLAY_MANAGER: ImageSmoothing nao esta disponivel para o seu navegador.");
+				console.log("DISPLAY_MANAGER: ImageSmoothing nao disponivel para o seu navegador.");
 			}
 		};
 		
@@ -1005,7 +1022,8 @@
 		 * @function
 		 * @param {Object} object Canvas or Image Object on which to apply the filter
 		 * @param {String} effect "b&w", "brightness", "transparent"
-		 * @param {String} option : level [0...1] (for brightness), color to be replaced (for transparent) 
+		 * @param {String} option : level [0...1] (for brightness), 
+									color to be replaced (for transparent) 
 		 * @return {Context2D} context object
 		 */
 		api.applyRGBFilter = function(object, effect, option) {

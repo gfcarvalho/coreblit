@@ -37,7 +37,7 @@
 	 */	
 	core.event = (function(){
 
-		/**	Armazena a interface(campos e metodos) publica deste modulo
+		/**	Armazena a interface publica deste modulo
 			@private
 		*/
 		var api = {}; 
@@ -60,35 +60,37 @@
 		// ---------------------------------------------------------
 		
 		// LOAD EVENTS
-		api.LOAD_COMPLETE = "core.loader.loadcomplete";
-		api.LOAD_SATUS = "core.loader.loadstatus";
+		api.LOAD_COMPLETE = "loader.loadcomplete";
+		api.LOAD_SATUS = "loader.loadstatus";
 		
 		// DISPLAY EVENTS
-		api.RESIZE = "core.display.resize";
-		api.ORIENTATION_CHANGE = "core.display.resize";
-		api.RESOLUTION_CHANGE = "core.display.resolutionchange";
+		api.RESIZE = "display.resize";
+		api.ORIENTATION_CHANGE = "display.resize";
+		api.RESOLUTION_CHANGE = "display.resolutionchange";
 
 		// GAME EVENTS
-		api.GAME_RUN = "core.game.run";
-		api.GAME_STOP = "core.game.stop";
-		api.GAME_PAUSE = "core.game.pause";
-		api.GAME_RESUME = "core.game.resume";
+		api.GAME_RUN = "game.run";
+		api.GAME_STOP = "game.stop";
+		api.GAME_PAUSE = "game.pause";
+		api.GAME_RESUME = "game.resume";
 
 		// INPUT EVENTS
-		api.CLICK = "core.input.click";
-		api.DBLCLICK = "core.input.dblclick";
-		api.MOUSEDOWN = "core.input.mousedown";
-		api.MOUSEUP = "core.input.mouseup";
-		api.MOUSEMOVE = "core.input.mousemove";
-		api.MOUSEWHEEL = "core.input.mousewheel";
-		api.MOUSEOVER = "core.input.mouseover";
-		api.MOUSEOUT = "core.input.mouseout";
-		api.TOUCHSTART = "core.input.touchstart";
-		api.TOUCHEND = "core.input.touchend";
-		api.TOUCHMOVE = "core.input.touchmove";
-		api.KEYDOWN = "core.input.keydown";
-		api.KEYUP = "core.input.keyup";
-		api.KEYPRESS = "core.input.keypress";
+		// por questao de velocidade e garbage colector friendly
+		// nao sao gerados eventos de input
+		/*api.CLICK = "input.click";
+		api.DBLCLICK = "input.dblclick";
+		api.MOUSEDOWN = "input.mousedown";
+		api.MOUSEUP = "input.mouseup";
+		api.MOUSEMOVE = "input.mousemove";
+		api.MOUSEWHEEL = "input.mousewheel";
+		api.MOUSEOVER = "input.mouseover";
+		api.MOUSEOUT = "input.mouseout";
+		api.TOUCHSTART = "input.touchstart";
+		api.TOUCHEND = "input.touchend";
+		api.TOUCHMOVE = "input.touchmove";
+		api.KEYDOWN = "input.keydown";
+		api.KEYUP = "input.keyup";
+		api.KEYPRESS = "input.keypress";*/
 
 		// DOCUMENT EVENTS
 		api.BLUR = "document.blur";
@@ -187,7 +189,7 @@
 		/** Remove all subscriptions of a channel	
 			@deprecated (!)dangerous
 		*/
-		api.removeChannelListeners = function(/** String */ topic){
+		api.removeChannelSubscriptions = function(/** String */ topic){
 			if(cache[topic])
 				cache[topic].clear();
 		};
@@ -195,7 +197,7 @@
 		/** Remove all subscriptions of all channels		
 			@deprecated (!)dangerous
 		*/
-		api.removeAllListeners = function(){
+		api.removeAllSubscriptions = function(){
 				cache = {};
 		};
 		

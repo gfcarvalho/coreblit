@@ -39,7 +39,6 @@
 			var ua = navigator.userAgent;
 			var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]';
 			return {
-				userAgent:		ua,
 				IE:             !!window.attachEvent && !isOpera,
 				Opera:          isOpera,
 				WebKit:         ua.indexOf('AppleWebKit/') > -1,

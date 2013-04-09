@@ -30,6 +30,7 @@
 		 *	Flag para indicar que o objeto foi inserido na colecao de objetos do Game Manager
 		 *	@type Boolean
 		 *	@private
+		 *	@deprecated
 		 */
 		var inGame = false;
 		
@@ -71,24 +72,32 @@
 		 *	Adiciona o objeto a colecao de objetos do jogo
 		 *	@name core.GameObject#addToGame
 		 *	@public (privileged)
+		 *	@return {Boolean} true, se a operacao foi efetuada
+		 *	@deprecated
 		 */
 		this.addToGame = function() {
 			if(!inGame) {
 				game.addGameObject(this);
 				inGame = true;
+				return true;
 			}
+			return false;
 		};
 		
 		/** 
 		 *	Remove o objeto da colecao de objetos do jogo
 		 *	@name core.GameObject#removeFromGame
 		 *	@public (privileged)
+		 *	@return {Boolean} true, se a operacao foi efetuada
+		 *	@deprecated
 		 */
 		this.removeFromGame = function() {
 			if(inGame) {
 				game.removeGameObject(this);		
 				inGame = false;
+				return true;
 			}
+			return false;
 		}
 	};
 	
@@ -97,7 +106,7 @@
 	//==============================================================================================
 	
 	/**
-	 *	Inicializa ou reinicializa o objeto e o adciona a colecao de objetos do Game Manager
+	 *	Inicializa ou reinicializa o objeto e o adiciona a colecao de objetos do Game Manager
 	 *	@type GameObject
 	 *	@param {Number} x Coordenada do objeto no eixo X.
 	 *	@param {Number} y Coordenada do objeto no eixo Y.

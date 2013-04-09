@@ -13,7 +13,7 @@
 	 * @require core.timer
 	 * @require core.event
 	 */	
-	core.game = (function(display, timer) {
+	core.game = (function(display, timer, input) {
 
 		/**	Armazena a interface(campos e metodos) publica deste modulo
 			@private
@@ -52,7 +52,7 @@
 			@type Number
 			@private
 		*/
-		var frameID = null;
+		var frameID = -1;
 		
 		/** Verdadeiro se a aplicacao estiver em pausa, false caso contrario.
 			@type Boolean
@@ -146,6 +146,7 @@
 		//                                        Private methods
 		//==========================================================================================
 
+		var i; // iterator
 		/** 
 			Insere os novos objetos na colecao de objetos.
 			@private
@@ -154,10 +155,9 @@
 		{
 			if (addedGameObjects.length != 0)
 			{
-				for (var x = 0; x < addedGameObjects.length; ++x)
-				{
-					// addedGameObjects[x].GUID = nextGUID++;
-					gameObjects.push(addedGameObjects[x]);
+				for (i = 0; i < addedGameObjects.length; ++i)
+				{					
+					gameObjects.push(addedGameObjects[i]);
 				}
 
 				addedGameObjects.clear();
@@ -175,10 +175,10 @@
 		{
 			if (removedGameObjects.length != 0)
 			{
-				for (var x = 0; x < removedGameObjects.length; ++x)
+				for (i = 0; i < removedGameObjects.length; ++i)
 				{
 					// remove efetivamente o objeto da coleção de objetos
-					gameObjects.removeObject(removedGameObjects[x]);
+					gameObjects.removeObject(removedGameObjects[i]);
 				}
 				removedGameObjects.clear();
 			}
@@ -209,90 +209,85 @@
 			console.log("==================================================");
 		};
 		
-		/**
-			Ponto de entrada para o gameLoop.
-			@function
-			@private 
-			@type void
-		*/
-		var frame = function(){
-			// display.flush();
-			gameLoop();
-		};
-
+		var dt, firstT = true, thist = 0, lastt = 0, dtt = 0 ;
 		/**
 			Loop de renderizacao da engine. Efetua a atualizacao e a exibicao dos graficos.		
 			@function
 			@private 
 			@type void
 		*/
-		var gameLoop = function ()
+		var gameLoop = function (t)
 		{			
 			// atualiza informacoes de tempo do jogo
-			timer.update();
+			timer.update(t);			
 
 			// dt(delta time) = tempo entre o frame atual e o ultimo frame renderizado, em segundos
 			// Math.min para evitar valores de dt altos (baixo fps ou paradas no gameloop)
 			// timeMultiplier = hack usado para acelerar ou desacelerar o jogo
-			var dt = Math.min(0.0666667, timer.tick()) * timeMultiplier;
+			dt = Math.min(0.0666667, timer.tick()) * timeMultiplier;			
 			
-			// benchmark
+			addNewGameObjects();
+			removeOldGameObjects();
+			
+			// benchmark (!) me tire daqui -> modularizar ferramenta de benchmark
 			if(benchmarkActivated)
-				executeBenchmark();	
-					
-			// frameID = requestAnimationFrame(frame);
+				executeBenchmark();				
 			
+			// limpa o display (o prepara para renderizar a nova cena)
 			display.clear();
 			
-			// context.save();
+			// context.save(); // protege info de contexto global ?
+			
+			// nao dispara eventos enquanto estiver atualizando os objetos
+			input.lock();
 			
 			// inicia as rotinas de atualização e rendering dos GameObjects
 			if (!paused)
-			{
-				addNewGameObjects();
-				removeOldGameObjects();
-
+			{			
 				// primeiramente atualiza-se todos os game objects
-				for (var x = 0; x < gameObjects.length; ++x)
+				for (i = 0; i < gameObjects.length; ++i)
 				{
-					if (gameObjects[x].update)
+					if (gameObjects[i].update)
 					{
 						// callback que deve estar presente em todos os game objects atualizáveis
-						gameObjects[x].update(dt, context, api.xScroll, api.yScroll);
+						gameObjects[i].update(dt, context, api.xScroll, api.yScroll);
 					}
-				}
+				}			
 
 				// finalmente desenhamos os game objects
-				for (var x = 0; x < gameObjects.length; ++x)
+				for (i = 0; i < gameObjects.length; ++i)
 				{
-					if (gameObjects[x].draw)
+					if (gameObjects[i].draw)
 					{
 						// callback que deve estar presente em todos os game objects renderizaveis
-						gameObjects[x].draw(dt, context, api.xScroll, api.yScroll);
+						gameObjects[i].draw(dt, context, api.xScroll, api.yScroll);
 					}
 				}				
 			} 
 			// atualização e rendering de objetos quando a aplicação entra em pausa
 			else if(paused)
-			{
+			{				
 				// atualiza objetos que precisam ser atualizados quando o jogo pausa
-				for (var x = 0; x < gameObjects.length; ++x)
+				for (i = 0; i < gameObjects.length; ++i)
 				{
-					if (gameObjects[x].pauseUpdate)
+					if (gameObjects[i].pauseUpdate)
 					{
-						gameObjects[x].pauseUpdate(dt, context, api.xScroll, api.yScroll);
+						gameObjects[i].pauseUpdate(dt, context, api.xScroll, api.yScroll);
 					}
-				}
+				}			
 				
 				// atualiza objetos que precisam ser renderizados quando o jogo pausa
-				for (var x = 0; x < gameObjects.length; ++x)
+				for (i = 0; i < gameObjects.length; ++i)
 				{				
-					if (gameObjects[x].pauseDraw)
+					if (gameObjects[i].pauseDraw)
 					{
-						gameObjects[x].pauseDraw(dt, context, api.xScroll, api.yScroll);
+						gameObjects[i].pauseDraw(dt, context, api.xScroll, api.yScroll);
 					}
 				}
 			}
+			
+			// libera eventos para as teclas e consome quaisquer eventos registrados			
+			input.unlock(); 
 							
 			// descarrega o back buffer para o front buffer canvas
 			display.flush();
@@ -300,7 +295,7 @@
 			// context.restore();
 			
 			// requisita o proximo quadro de animacao
-			frameID = requestAnimationFrame(frame);
+			frameID = requestAnimationFrame(gameLoop);			
 		};
 
 		//==========================================================================================
@@ -314,9 +309,11 @@
 			@type void
 		*/
 		api.startBenchmark = function()
-		{
-			benchmarkActivated = true;
+		{			
+			totalFrames = 0;
+			avgFPS = 0;
 			timer.reset();
+			benchmarkActivated = true;
 			console.log("GAME_MANAGER: Benchmark iniciado.");
 		};
 
@@ -335,7 +332,13 @@
 			// this.stats.reset();
 			benchmarkActivated = false;
 			console.log("GAME_MANAGER: Benchmark finalizado.");
-			printBenchmarkResults();
+			// printBenchmarkResults();
+			return {
+				frames: totalFrames,
+				min: minFPS,
+				max: maxFPS,
+				avg: avgFPS.round(0)
+			};
 		};
 		
 		api.getGameObjectsCount = function()
@@ -419,11 +422,8 @@
 		};
 		
 		// reinicia o jogo reload)
-		api.reset = function(/*reload?*/reload)
-		{
-			// inicia o status
-			// if(!stats){ stats = Util.status('statsPanel','fps'); }
-			
+		/*api.reset = function(reload)
+		{			
 			// cache para o contexto de rendering
 			if(!context){ context = display.getSystemContext(); }
 			
@@ -435,7 +435,7 @@
 			// implementar game.state (maquina de estados) -> usar jakegordon modificada?
 			// api.game.state.reset();
 			
-		};
+		};*/
 		
 		/**
 			Indica se o game loop esta ativo.
@@ -446,7 +446,7 @@
 		*/
 		api.isRunning = function()
 		{
-			if(frameID)
+			if(frameID != -1)
 			{
 				return true;
 			}
@@ -473,18 +473,12 @@
 			
 			if(!api.isRunning())
 			{
-				// inicia o status
-				// if(!stats){ stats = Util.status('statsPanel','fps'); } 
-				
 				// cache para o contexto de rendering
 				if(!context){ context = display.getSystemContext(); }
+								
+				display.clear();				
 				
-				// limpa tudo antes de iniciar ( ? )
-				// display.clear();
-				display.clearBackBuffer();
-				
-				// marca o tempo de inicio do primeiro frame a ser desenhado
-				// lastFrame = Date.now();
+				// comeca a contagem de tempo
 				timer.begin();
 				
 				// publica o evento core.event.GAME_RUN
@@ -494,7 +488,7 @@
 				console.log("GAME_MANAGER: Game loop iniciado.");
 				
 				// inicia o game loop
-				gameLoop();
+				gameLoop();				
 			}
 		};
 		
@@ -508,10 +502,11 @@
 		api.stop = function()
 		{
 			// cancela o gameLoop
-			frameID = cancelAnimationFrame(frameID); // frameID = undefined
+			cancelAnimationFrame(frameID);
+			frameID = -1;
 			
-			core.event.publish.defer(core.event.GAME_STOP, [context, api.xScroll, api.yScroll] );
-			
+			// publica o evento GAME_STOP
+			core.event.publish.defer("game.stop", [context, api.xScroll, api.yScroll] );			
 			
 			console.log("GAME_MANAGER: Game loop interrompido.");
 		};
@@ -532,8 +527,7 @@
 		};
 		
 		/**
-			Remove um objeto especifico da colecao de objetos.<br>
-			Chama o callback onDestroy para o objeto (se o objeto possuir tal callback)  removido.
+			Remove um objeto especifico da colecao de objetos.<br>			
 			@name core.game#removeGameObject
 			@function
 			@public
@@ -580,11 +574,11 @@
 		*/
 		api.shutdownAll = function()
 		{
-			for (var x = 0; x < gameObjects.length; ++x)
+			for (i = 0; i < gameObjects.length; ++i)
 			{
-				if (gameObjects[x].shutdown)
+				if (gameObjects[i].shutdown)
 				{
-					gameObjects[x].shutdown();
+					gameObjects[i].shutdown();
 				}
 			}
 
@@ -592,19 +586,13 @@
 		};
 		
 		/**
-			Ordena a colecao de objetos do jogo (z-buffer).<br>
-			Ordena a colecao de objetos do menor para o maior zOrder (profundidade).<br>
-			Dessa forma objetos com maior zOrder sao renderizados por ultimo
-			e se sobrepoem aos de menor zOrder em caso de ocuparem um mesmo espaco na viewport.<br>
-			(!) Deixar o programador decidir quando reordenar
-			OBS: executado automaticamente ao inserir um novo objeto na colecao. Tambem chamado automaticamente 
-			pelo metodo {@link core.GameObject#setDepth} utilizado para alterar a profundidade de um objeto
+			Ordena a colecao de objetos do jogo (zOrder).<br>
 			@name core.game#sort
 			@function
 			@public
-			@type void
+			@type void			
 		*/
-		api.sort = function() // add sort function???
+		api.sort = function()
 		{
 			gameObjects.sort(function(a,b){return a.zOrder - b.zOrder;});
 		};
@@ -613,8 +601,7 @@
 			Indica se a aplicacao esta ou nao em pausa no momento da chamada.
 			@name core.game#isPaused
 			@function
-			@public
-			@type Boolean
+			@public			
 			@return {Boolean} Retorna true se a aplicacao esta em pausa, false caso contrario.
 		*/
 		api.isPaused = function()
@@ -685,7 +672,13 @@
 			}
 		};
 		
-		// pega uma posicao do canvas e converte para a posicao do game (posicao no mundo de jogo)
+		/**
+			Pega uma posicao do canvas e converte para a posicao do game (posicao no mundo de jogo)
+			@name core.game#toGamePosition
+			@function
+			@public
+			@deprecated
+		*/
 		api.toGamePosition = function (x, y)
 		{			
 			// display.toCanvasPosition(x, y);
@@ -698,6 +691,6 @@
 		
 		// fim
 		return api;
-	})(core.display, core.timer);
+	})(core.display, core.timer, core.input);
 	
 })(); // end core.game runtime closure
