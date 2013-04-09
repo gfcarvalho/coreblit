@@ -25,7 +25,9 @@
  
     if (!window.requestAnimationFrame)
 	{
-		/** @ignore */
+		/** @ignore 
+			(!) Memory Leaks
+		*/
         window.requestAnimationFrame = function(callback, element) {
             var currTime = Date.now();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
@@ -117,6 +119,21 @@
 			 */
 			Date.now = function(){return new Date().getTime()};
 	};
+	
+	if(typeof window.performance === "undefined") 
+	{
+		window.performance = {};
+	};
+	
+	if (typeof performance.now === "undefined") 
+	{
+			/**
+			 * fornece uma substituicao para o browser que
+			 * nao suporte performance.now
+			 * @private
+			 */
+			performance.now = function(){return Date.now()};
+	};
 	//=========================================================================
 
 	//=========================================================================
@@ -154,7 +171,7 @@
 		return this;
 	};
 	
-	Array.prototype.binarySearch = function(find, comparator) {
+	/*Array.prototype.binarySearchIndexOf = function(find, comparator) {
 		var low = 0, high = this.length - 1,
 		i, comparison;
 		while (low <= high) {
@@ -165,11 +182,12 @@
 			return i;
 		}
 		return -1;
-	};	
+	};*/	
 	
-	Array.prototype.binarySearch2 = function(value, key) {
-		var low = 0, high = this.length - 1,
-		i, comparison;
+	// (!) implementacao de busca binaria valida apenas para arrays em ordem crescente	
+	var low , high , i, comparison; // ensure low gc		
+	Array.prototype.binarySearch = function(value, key) { 
+		low = 0; high = this.length - 1;		
 		while (low <= high) {
 			i = Math.floor((low + high) / 2);
 			comparison = (this[i][key] - value);
@@ -179,6 +197,33 @@
 		}
 		return -1;
 	};
+	
+	/*Array.prototype.binarySearchIndexOf = function(find, comparator) {
+		var low = 0, high = this.length - 1,
+		i, comparison;
+		while (low <= high) {
+			i = Math.floor((low + high) / 2);
+			comparison = comparator(this[i], find);
+			if (comparison < 0) { low = i + 1; continue; };
+			if (comparison > 0) { high = i - 1; continue; };
+			return i;
+		}
+		return -1;
+	};*/
+	
+	// retorna a referencia do objeto ao inves do indice (nao eh boa pratica)
+	/*Array.prototype.binarySearchGet = function(value, key) {
+		var low = 0, high = this.length - 1,
+		i, comparison;
+		while (low <= high) {
+			i = Math.floor((low + high) / 2);
+			comparison = (this[i][key] - value);
+			if (comparison < 0) { low = i + 1; continue; };
+			if (comparison > 0) { high = i - 1; continue; };
+			return this[i];
+		}
+		return null;
+	};*/
 	
 	/**
 		Remove um certo numero de objetos do array

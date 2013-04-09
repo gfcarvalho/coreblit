@@ -9,9 +9,10 @@
 	 */
 	core.timer = (function() { // begin constructor runtime closure
 		
-		var startTime = Date.now(), prevTime = startTime, lastTime = startTime, deltaTime = 0;
+		var startTime = performance.now(), prevTime = startTime, lastTime = startTime, deltaTime = 0;
 		var fps = 0, fpsMin = 1000, fpsMax = 0;
 		var frames = 0;
+		var time = 0;
 		
 		return {
 
@@ -25,13 +26,15 @@
 
 			begin: function () {
 
-				startTime = lastTime = Date.now();
+				// startTime = lastTime = Date.now();
+				startTime = performance.now();			
 				
 			},
 
-			end: function () {
+			end: function (dt) {
 
-				var time = Date.now();
+				// var time = Date.now();
+				time = dt;				
 
 				frames ++;
 				
@@ -42,7 +45,7 @@
 
 				if ( time > prevTime + 1000 ) {
 
-					fps = Math.round( ( frames * 1000 ) / ( time - prevTime ) );
+					fps = Math.round( ( frames * 1000 ) / ( time - prevTime ) );					
 					fpsMin = Math.min( fpsMin, fps );
 					fpsMax = Math.max( fpsMax, fps );
 					
@@ -56,9 +59,9 @@
 
 			},
 
-			update: function () {
+			update: function (dt) {
 
-				startTime = this.end();
+				startTime = this.end(dt);
 
 			},
 			

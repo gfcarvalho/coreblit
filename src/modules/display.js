@@ -390,7 +390,7 @@
 					if(_auto_adjust)
 					{
 						// ajusta o canvas na janela do navegador de acordo com as configucoes
-						api.resize();
+						api.resize.defer();
 					}					
 										
 					console.log("DISPLAY_MANAGER: Display iniciado.");
