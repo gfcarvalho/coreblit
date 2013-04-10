@@ -32,8 +32,7 @@ Core Blit é o resultado de 2 anos de estudo em Javascript e HTLM5 no desenvolvi
 - Suporte a HTML5 Audio *
 - Gerenciamento de entidades e outros elementos de jogo
 - Detecção de colisão *
-- Suporte a Física *
-	- interação dinâmica entre os objetos fica a cargo do programador
+- Simulação Física *	
 - ... e mais *
 
 (*) Em desenvolvimento.
