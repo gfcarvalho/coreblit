@@ -82,7 +82,9 @@ A ducumentação gerada estará disponível no diretório "docs".
 
 Utilizando Core Blit
 -------------------------------------------------------------------------------
-Tutorial: será disponibilizado em breve
+Veja alguns demos [aqui](https://github.com/gfcarvalho/coreblit/wiki/Core-Blit-em-A%C3%A7%C3%A3o).
+
+Tutorial será disponibilizado em breve.
 
 Sugestões, dúvidas, precisa de ajuda ?
 -------------------------------------------------------------------------------
