@@ -15,8 +15,10 @@ Core Blit é um framework para desenvolvimento de jogos em HTML5.
 
 Por ser simples, leve e sem dependências de outros softwares é a solução ideal para iniciantes e para aqueles que buscam uma plataforma base para construir sua própria game engine.
 
-Core Blit é o resultado de 2 anos de estudo em Javascript e HTLM5 no desenvolvimento de jogos, e apresenta inicialmente as seguintes funcionalidades principais :
+Core Blit apresenta inicialmente as seguintes funcionalidades principais:
+Funcionalidades marcadas com * estão em estágio avançado desenvolvimento e podem não estar disponíveis por enquanto.
 
+- Multi-plataforma (HTML5 powered)
 - Renderização 2D através de HTML5 Canvas
 - Display auto-ajustável com diversas opções de configuração
   - modo janela ou fullscreen
@@ -24,16 +26,16 @@ Core Blit é o resultado de 2 anos de estudo em Javascript e HTLM5 no desenvolvi
 	- preenchimento de tela(stretch to fit)
 	- aspect-ratio fixo ou variável
 	- suporte a double buffer
+- Gerenciamento de eventos internos e da plataforma(browser)
+- Preload de recursos externos (imagens e sons*)
 - Animações baseadas em sprites 2D com alto grau de liberdade e configurações *
 	- permite configurar cada quadro da animação independentemente *
-- Gerenciamento de eventos internos e da plataforma(browser)
-- Preload de recursos externos (imagens e sons)*
 - Suporte a teclado, mouse* e touchscreen*
 - Suporte a HTML5 Audio *
 - Gerenciamento de entidades e outros elementos de jogo
 - Detecção de colisão *
 - Simulação Física *	
-- ... e mais *
+- ... e mais
 
 (*) Em desenvolvimento.
 
@@ -81,7 +83,7 @@ A ducumentação gerada estará disponível no diretório "docs".
 
 Utilizando Core Blit
 -------------------------------------------------------------------------------
-Tutorial: será disponibilizado em breve =)
+Tutorial: será disponibilizado em breve
 
 Sugestões, dúvidas, precisa de ajuda ?
 -------------------------------------------------------------------------------
