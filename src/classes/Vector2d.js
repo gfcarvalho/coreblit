@@ -230,7 +230,7 @@
 	core.Vector2d.distance = function(A, B)
 	{
 		return Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
-	}
+	};
 
 	/**
 		Cria um novo vetor que aponta de A para B e possui a norma da distancia entre A e B.
@@ -244,6 +244,6 @@
 		var x = B.x - A.x;
 		var y = B.y - A.y
 		return new core.Vector2d(x, y);
-	}
+	};
 	
 })(); // end core.Vector2d runtime closure

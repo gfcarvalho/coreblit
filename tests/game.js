@@ -107,6 +107,30 @@ var jsgame = {};
 	}	
 	ball.addToGame();
 	
+	var preloadBall = new core.GameObject(150, 150, 2);
+	
+	// preload code
+	preloadBall.ballImg = core.display.createCanvas(50, 50);
+	preloadBall.contextBall = preloadBall.ballImg.getContext('2d');
+	preloadBall.contextBall.save();
+	preloadBall.contextBall.fillStyle = "purple";		
+	preloadBall.contextBall.beginPath();
+	preloadBall.contextBall.arc(25, 25, 25, 0, 2*Math.PI, false);         
+	preloadBall.contextBall.fill();	
+	preloadBall.contextBall.closePath(); 		
+	preloadBall.contextBall.textAlign = "center";
+	preloadBall.contextBall.fillStyle = "black";	
+	preloadBall.contextBall.fillText("Pre Rendered", 25, 25, 50);
+	preloadBall.contextBall.restore();
+	
+	preloadBall.draw = function(dt, context)
+	{
+		// draw preloaded
+		context.drawImage(this.ballImg, this.x, this.y);
+	}
+	// preloadBall.update = ball.update;
+	preloadBall.addToGame();
+	
 	var ball2 = new core.GameObject(30, 200, 2);	
 	ball2.color = "rgba(0, 255, 0, 1)";	
 	ball2.velocity = 0;
@@ -176,6 +200,17 @@ var jsgame = {};
 	jsgame.ball3 = ball3;
 	jsgame.ball4 = ball4;
 	
+	jsgame.preload = preloadBall;
+	
+	function onLoad(){
+		
+		document.body.appendChild(core.data.images.togepi);
+		// document.body.appendChild(core.data.images.bkg);		
+		
+		// espera mostrar o logo um pouco para começar a rodar o jogo
+		setTimeout(function(){core.game.run();}, 1000);
+	}
+	
 	function init()
 	{
 		// if(core.system.browserFeatures.NativeRequestAnimationFrame)
@@ -188,7 +223,12 @@ var jsgame = {};
 		core.input.enableKeyboard(true);
 		// core.input.enableKeys(37, 38, 39, 40, 67);
 		
-		core.game.run();
+		core.data.load([
+		{type: "image", name: "bkg", src: "resources/bkg.jpg"},
+		{type: "image", name: "togepi", src: "resources/togepi.png"}
+		], onLoad);
+		
+		
 	}
 	
 	window.onload = init;
