@@ -60,10 +60,11 @@
 		// ---------------------------------------------------------
 		
 		// LOAD EVENTS
-		api.LOAD_COMPLETE = "loader.loadcomplete";
-		api.LOAD_SATUS = "loader.loadstatus";
+		api.LOAD_COMPLETE = "loader.complete";
+		api.LOAD_PROGRESS_UPDATE = "loader.progressupdate";
 		
 		// DISPLAY EVENTS
+		api.DISPLAY_INITIALIZED = "display.initialized";
 		api.RESIZE = "display.resize";
 		api.ORIENTATION_CHANGE = "display.resize";
 		api.RESOLUTION_CHANGE = "display.resolutionchange";

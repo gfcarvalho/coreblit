@@ -6,52 +6,54 @@
  * @author <a href="mailto:gustavo.carvalho@ufv.br">Gustavo Carvalho</a>
  */
  
-(function() {
 	//=========================================================================
 	// cross browser requestAnimationFrame/cancelAnimationFrame.
 	// utiliza setTimeout e clearTimeout se o navegador não possuir suporte nativo
 	// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 	//=========================================================================
-		
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-		/** @ignore */
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-		/** @ignore */
-        window.cancelAnimationFrame = 
-          window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
- 
-    if (!window.requestAnimationFrame)
-	{
-		/** @ignore 
-			(!) Memory Leaks
-		*/
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = Date.now();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-	}
- 
-    if (!window.cancelAnimationFrame)
-	{
-		/** @ignore */
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-	}
+	(function(){	
+		var lastTime = 0;
+		var vendors = ['ms', 'moz', 'webkit', 'o'];
+		for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+			/** @ignore */
+			window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+			/** @ignore */
+			window.cancelAnimationFrame = 
+			  window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+		}
+	 
+		if (!window.requestAnimationFrame)
+		{
+			/** @ignore 
+				(!) Memory 
+			*/
+			window.requestAnimationFrame = function(callback, element) {
+				var currTime = Date.now();
+				var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+				var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+				  timeToCall);
+				lastTime = currTime + timeToCall;
+				return id;
+			};
+		}
+	 
+		if (!window.cancelAnimationFrame)
+		{
+			/** @ignore */
+			window.cancelAnimationFrame = function(id) {
+				clearTimeout(id);
+			};
+		}
 	
+	})();
+ 
+(function() {	
 	//=========================================================================
 
 	//=========================================================================
 	// Fallback em caso de inexistencia do namespace console no navegador
 	//=========================================================================
-	if ( typeof(console) === "undefined" ) 
+	if ( typeof(window.console) === "undefined" ) 
 	{
 
 		// Console do navegador. Detalhes em: "http://blogs.msdn.com/b/cdndevs/archive/2012/01/03/10168757.aspx"
@@ -59,21 +61,21 @@
 		// Assim evita-se o risco de erros ao tentar fazer chamadas de console em navegadores que nao possuem essa ferramenta.
 		
 		/** @ignore */
-		console = {};
+		window.console = {};
 		/** @ignore */
-		console.log = function() {};
+		window.console.log = function() {};
 		/** @ignore */	
-		console.info = function() {};
+		window.console.info = function() {};
 		/** @ignore */
-		console.error = function() {alert(Array.prototype.slice.call(arguments).join(", "));};
+		window.console.error = function() {alert(Array.prototype.slice.call(arguments).join(", "));};
 		/** @ignore */
-		console.warn = function() {}; 
+		window.console.warn = function() {}; 
 		/** @ignore */
-		console.clear = function() {};
+		window.console.clear = function() {};
 		/** @ignore */
-		console.dir = function() {};
+		window.console.dir = function() {};
 		/** @ignore */
-		console.assert = function() {};
+		window.console.assert = function() {};
 	};
 	//=========================================================================
 
@@ -169,20 +171,7 @@
 	Array.prototype.clear = function()	{
 		this.length = 0;
 		return this;
-	};
-	
-	/*Array.prototype.binarySearchIndexOf = function(find, comparator) {
-		var low = 0, high = this.length - 1,
-		i, comparison;
-		while (low <= high) {
-			i = Math.floor((low + high) / 2);
-			comparison = comparator(this[i], find);
-			if (comparison < 0) { low = i + 1; continue; };
-			if (comparison > 0) { high = i - 1; continue; };
-			return i;
-		}
-		return -1;
-	};*/	
+	};		
 	
 	// (!) implementacao de busca binaria valida apenas para arrays em ordem crescente	
 	var low , high , i, comparison; // ensure low gc		
@@ -198,9 +187,8 @@
 		return -1;
 	};
 	
-	/*Array.prototype.binarySearchIndexOf = function(find, comparator) {
-		var low = 0, high = this.length - 1,
-		i, comparison;
+	Array.prototype.binarySearchIndexOf = function(find, comparator) {
+		low = 0; high = this.length - 1;		
 		while (low <= high) {
 			i = Math.floor((low + high) / 2);
 			comparison = comparator(this[i], find);
@@ -209,21 +197,7 @@
 			return i;
 		}
 		return -1;
-	};*/
-	
-	// retorna a referencia do objeto ao inves do indice (nao eh boa pratica)
-	/*Array.prototype.binarySearchGet = function(value, key) {
-		var low = 0, high = this.length - 1,
-		i, comparison;
-		while (low <= high) {
-			i = Math.floor((low + high) / 2);
-			comparison = (this[i][key] - value);
-			if (comparison < 0) { low = i + 1; continue; };
-			if (comparison > 0) { high = i - 1; continue; };
-			return this[i];
-		}
-		return null;
-	};*/
+	};
 	
 	/**
 		Remove um certo numero de objetos do array

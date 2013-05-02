@@ -23,7 +23,7 @@
 			@type Boolean
 			@private
 		*/
-		var _started = false,
+		var _initialized = false,
 		
 		/**Se o elemento canvas é suportado pelo navegador.
 			@type Boolean
@@ -161,7 +161,7 @@
 		var _resize = function() 
 		{
 			// verifica se o display esta disponivel
-			if(!_started)
+			if(!_initialized)
 			{
 				return;
 			}
@@ -226,6 +226,9 @@
 		//==========================================================================================
 		//                                    Public methods
 		//==========================================================================================		
+		api.initialized = function(){
+			return _initialized;
+		};
 		
 		api.resize = function()
 		{
@@ -260,7 +263,7 @@
 		api.startup = function(/**Number*/ width, /**Number*/ height, /**Boolean*/ auto_adjust,
 		/**Boolean*/ fit_to_screen,/**Boolean*/ maintain_aspect_ratio,/**Boolean*/ double_buffered)
 		{
-			if(!_started)
+			if(!_initialized)
 			{
 				if(width<=0 || height <=0)
 					throw new Error("Impossivel iniciar display: resolucao invalida!");		
@@ -385,14 +388,16 @@
 					api.backBufferContext2D = api.backBuffer.getContext('2d');
 					
 					// flag indica que o display foi iniciado
-					_started = true;
+					_initialized = true;
 					
 					if(_auto_adjust)
 					{
 						// ajusta o canvas na janela do navegador de acordo com as configucoes
-						api.resize.defer();
+						// api.resize.defer();
+						api.resize();
 					}					
-										
+						
+					core.event.publish(core.event.DISPLAY_INITIALIZED);
 					console.log("DISPLAY_MANAGER: Display iniciado.");
 				}
 				else
@@ -425,7 +430,7 @@
 		api.isDoubleBuffered = function()
 		{
 			// verifica se o display esta disponivel
-			if(!_started)
+			if(!_initialized)
 			{			
 				console.warn("DISPLAY_MANAGER: Display ainda nao foi iniciado.");
 				return undefined;

@@ -19,13 +19,13 @@
  */
 var core = core || {};
 
-(function(w) {
+(function($) {
 	
 	/**  
 	 * Pega o documento relativo ao objeto window correto
 	 * @ignore 
 	 */
-	document = w.document;
+	document = $.document;
 	
 	core = {		
 		mod : "coreblit",
@@ -38,11 +38,11 @@ var core = core || {};
 		event: null, // event manager
 		display: null, // screen manager
 		timer: null, // time manager
-		game: null // game manager		
-		// input: null, // input manager
-		// debug: null, // ferramentas de depuracao				
+		game: null, // game manager		
+		input: null, // input manager		
+		data: null // data(resource) manager
 		
-		// data: null, // data(resource) manager
+		// debug: null, // ferramentas de depuracao				
 		// util: null, // utilitarios
 		// plugin: null, // plugin manager
 		// audio: null, // html5 <audio>

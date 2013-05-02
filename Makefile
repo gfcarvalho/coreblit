@@ -45,6 +45,7 @@ MODULES = $(srcdir)/core.js\
 	 $(srcdir)/modules/input.js\
 	 $(srcdir)/modules/timer.js\
 	 $(srcdir)/modules/game.js\
+	 $(srcdir)/modules/data.js\
 	 $(srcdir)/classes/GameObject.js\
 	 $(srcdir)/classes/Vector2d.js
 
@@ -82,7 +83,7 @@ clean:
 
 doc: debug
 	cat $(MODULES) | $(VERSION) >> $(TEMP)
-	java -jar $(JSDOC_PATH)/jsrun.jar $(JSDOC_PATH)/app/run.js -a -t=$(JSDOC_PATH)/templates/saberjs $(TEMP) $(JSDOC_OPTION) 
+	java -jar $(JSDOC_PATH)/jsrun.jar $(JSDOC_PATH)/app/run.js -a -t=$(JSDOC_PATH)/templates/coreblit $(TEMP) $(JSDOC_OPTION) 
 	rm -Rf $(TEMP)
 
 
