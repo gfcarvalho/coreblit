@@ -13,25 +13,7 @@
 		/**	Armazena a interface publica deste modulo
 			@private
 		*/
-		var api = {};
-		
-		//==========================================================================================
-		//                                   Private fields
-		//==========================================================================================
-		
-		// TODO: put your private fields here
-		
-		//==========================================================================================
-		//                                    Public fields
-		//==========================================================================================
-		
-		// --
-		
-		//==========================================================================================
-		//                                   Private methods
-		//==========================================================================================
-		
-		// --
+		var api = {};		
 				
 		//==========================================================================================
 		//                                    Public methods
@@ -159,7 +141,7 @@
 		//==========================================================================================
 		
 		api.getLoadPercentage = function(){
-			return imageCount/totalAssets;
+			return imageCount/totalAssets; // mudar imageCount p/ assetsLoaded
 		};
 		
 		api.load = function(/**Array*/assets, /**Callback*/onload){
@@ -204,7 +186,7 @@
 			}*/
 			try {
 				api.images[name] = new Image();
-				api.images[name].id = nextID;				
+				api.images[name].id = nextID++;				
 				api.images[name].onload = function(){onLoadImage(name);};
 				api.images[name].onerror = onImageError;
 				api.images[name].src = src;				

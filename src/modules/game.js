@@ -224,7 +224,7 @@
 			// dt(delta time) = tempo entre o frame atual e o ultimo frame renderizado, em segundos
 			// Math.min para evitar valores de dt altos (baixo fps ou paradas no gameloop)
 			// timeMultiplier = hack usado para acelerar ou desacelerar o jogo
-			dt = Math.min(0.0666667, timer.tick()) * timeMultiplier;			
+			dt = Math.min(0.0666667, timer.tick()) * timeMultiplier;
 			
 			addNewGameObjects();
 			removeOldGameObjects();
@@ -488,7 +488,7 @@
 				console.log("GAME_MANAGER: Game loop iniciado.");
 				
 				// inicia o game loop
-				gameLoop();				
+				frameID = requestAnimationFrame(gameLoop);				
 			}
 		};
 		

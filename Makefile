@@ -46,8 +46,10 @@ MODULES = $(srcdir)/core.js\
 	 $(srcdir)/modules/timer.js\
 	 $(srcdir)/modules/game.js\
 	 $(srcdir)/modules/data.js\
+	 $(srcdir)/classes/Vector2d.js\
 	 $(srcdir)/classes/GameObject.js\
-	 $(srcdir)/classes/Vector2d.js
+	 $(srcdir)/classes/Sprite.js\
+	 $(srcdir)/classes/Animation.js
 
 # list of modules to compile into minified file
 BUILD_MODULES = $(LIBRARIES)\

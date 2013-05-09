@@ -29,7 +29,7 @@
 	{
 		this.keyCode = keyCode;
 		this.event = NONE;		
-		this.time = null;
+		this.time = null; // calcular o tempo de pressionamento
 		this.locked = false;
 		this.pressed = false;		
 	};	
@@ -65,10 +65,10 @@
 		return this.pressed;
 	};
 	
-	key.prototype.isReleased = function()
+	/*key.prototype.isReleased = function()
 	{
 		return !this.pressed;
-	};
+	};*/
 	
 	var nullKey = new key(-1);
 	
@@ -339,9 +339,9 @@
 			if(index != -1) {
 				preventDefault(event);
 				registeredKeys[index].fire(KEYDOWN);			
-				return true;
+				return true; // return preventDefault(event); ???
 			}
-			return false;			
+			return false; // return true??		
 		};
 		
 		var onKeyUp = function(event, keyCode)
